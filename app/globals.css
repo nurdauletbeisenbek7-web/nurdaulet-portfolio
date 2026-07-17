@@ -1195,7 +1195,10 @@ img, svg { display: block; max-width: 100%; }
   text-align: center;
   color: transparent;
   -webkit-text-stroke: 1px var(--line-strong);
-  padding-bottom: 20px;
+  /* The font's line box is taller than the visible outlined letters. */
+  height: 0.78em;
+  overflow: hidden;
+  padding-bottom: 0;
   user-select: none;
 }
 
