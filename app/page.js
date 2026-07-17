@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import SmoothScroll from '@/components/SmoothScroll';
 import Cursor from '@/components/Cursor';
 import Loader from '@/components/Loader';
 import ScrollProgress from '@/components/ScrollProgress';
@@ -29,17 +28,16 @@ export default function Home() {
       <ScrollProgress />
       <Nav />
 
-      <SmoothScroll>
-        <main>
-          <Hero ready={loaded} />
-          <About />
-          <Skills />
-          <Projects />
-          <Process />
-          <Contact />
-        </main>
-        <Footer />
-      </SmoothScroll>
+      {/* Native scroll — reliable with IntersectionObserver reveals. */}
+      <main>
+        <Hero ready={loaded} />
+        <About />
+        <Skills />
+        <Projects />
+        <Process />
+        <Contact />
+      </main>
+      <Footer />
     </>
   );
 }

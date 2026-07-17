@@ -1,62 +1,77 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { gsap } from '@/lib/gsap';
 
-// Boot loader: counts 0→100 then wipes upward. Locks scroll while active.
+// Pure-CSS-transitioned boot loader. Counts 0→100, then wipes up.
+// No GSAP — uses CSS transitions + JS state changes.
 export default function Loader({ onDone }) {
   const root = useRef(null);
   const counter = useRef(null);
   const bar = useRef(null);
   const [n, setN] = useState(0);
+  const [phase, setPhase] = useState('count'); // count -> fadeout -> wipe -> done
 
   useEffect(() => {
-    // Skip the boot animation on return visits within the same session.
+    // Skip on return visits within the same session.
     if (sessionStorage.getItem('nb_loaded')) {
+      setPhase('done');
       if (onDone) onDone();
       return;
     }
     sessionStorage.setItem('nb_loaded', '1');
-
-    const obj = { v: 0 };
     document.documentElement.classList.add('is-loading');
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        document.documentElement.classList.remove('is-loading');
-        if (onDone) onDone();
-      },
-    });
-
-    tl.to(obj, {
-      v: 100,
-      duration: 0.8,
-      ease: 'power2.inOut',
-      onUpdate: () => setN(Math.round(obj.v)),
-    })
-      .to(bar.current, { scaleX: 1, duration: 0.8, ease: 'power2.inOut' }, 0)
-      .to(counter.current, { y: -30, opacity: 0, duration: 0.3, ease: 'power3.in' })
-      .to(
-        root.current,
-        { yPercent: -100, duration: 0.6, ease: 'power4.inOut' },
-        '-=0.1'
-      );
+    // Count 0→100 over ~1s
+    const start = performance.now();
+    const duration = 900;
+    let raf;
+    const tick = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      // ease out quad
+      const eased = 1 - (1 - progress) * (1 - progress);
+      setN(Math.round(eased * 100));
+      if (progress < 1) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        setPhase('fadeout');
+      }
+    };
+    raf = requestAnimationFrame(tick);
 
     return () => {
-      tl.kill();
+      cancelAnimationFrame(raf);
       document.documentElement.classList.remove('is-loading');
     };
   }, [onDone]);
 
+  // Phase transitions: fadeout counter → wipe up → done
+  useEffect(() => {
+    if (phase === 'fadeout') {
+      const t = setTimeout(() => setPhase('wipe'), 250);
+      return () => clearTimeout(t);
+    }
+    if (phase === 'wipe') {
+      const t = setTimeout(() => {
+        setPhase('done');
+        document.documentElement.classList.remove('is-loading');
+        if (onDone) onDone();
+      }, 550);
+      return () => clearTimeout(t);
+    }
+  }, [phase, onDone]);
+
   return (
-    <div className="loader" ref={root}>
+    <div
+      className={`loader ${phase === 'wipe' || phase === 'done' ? 'is-wiping' : ''}`}
+      ref={root}
+    >
       <div className="loader-inner">
         <span className="loader-mark">NB · 2026</span>
-        <span className="loader-count" ref={counter}>
+        <span className={`loader-count ${phase === 'fadeout' ? 'is-hidden' : ''}`} ref={counter}>
           {String(n).padStart(3, '0')}
         </span>
         <div className="loader-bar">
-          <div className="loader-bar-fill" ref={bar} />
+          <div className={`loader-bar-fill ${n >= 100 ? 'is-full' : ''}`} ref={bar} />
         </div>
       </div>
     </div>

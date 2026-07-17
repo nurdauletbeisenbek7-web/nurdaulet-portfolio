@@ -1,41 +1,22 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { gsap } from '@/lib/gsap';
+import { useEffect, useRef, useState } from 'react';
 import HeroMotif from '@/components/HeroMotif';
 import { site } from '@/data/site';
 
 export default function Hero({ ready }) {
   const root = useRef(null);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     if (!ready) return;
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ delay: reduced ? 0 : 0.1 });
-      tl.from('.hero-eyebrow > *', {
-        yPercent: 120,
-        opacity: 0,
-        stagger: 0.08,
-        duration: 0.8,
-        ease: 'power4.out',
-      })
-        .from(
-          '.hero-title .line-inner',
-          { yPercent: 115, duration: 1, stagger: 0.09, ease: 'power4.out' },
-          '-=0.4'
-        )
-        .from(
-          '.hero-sub, .hero-meta, .hero-cta, .hero-motif',
-          { opacity: 0, y: 24, duration: 0.9, stagger: 0.08, ease: 'power3.out' },
-          '-=0.6'
-        );
-    }, root);
-    return () => ctx.revert();
+    // Short delay to let the loader wipe finish.
+    const t = setTimeout(() => setVisible(true), 120);
+    return () => clearTimeout(t);
   }, [ready]);
 
   return (
-    <section id="top" className="hero" ref={root}>
+    <section id="top" className={`hero ${visible ? 'is-ready' : ''}`} ref={root}>
       <HeroMotif />
 
       <div className="hero-grid">
