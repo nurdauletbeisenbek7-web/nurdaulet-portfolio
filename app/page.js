@@ -1,40 +1,45 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-
-const realWork = [
-  { id: '01', name: 'UBT BASE', kind: 'EDTECH / AI', desc: 'Сервис подготовки к ЕНТ: тесты, ИИ-разбор ошибок и трекинг прогресса.', stack: 'NEXT.JS · OPENAI API · VERCEL', url: 'https://ubtbase-92yo.vercel.app', tone: 'lime' },
-  { id: '02', name: 'СЭН', kind: 'BEAUTY / WEB', desc: 'Сайт салона с прайсом, картами, записью и интеграциями для связи.', stack: 'HTML · CSS · JAVASCRIPT', url: 'https://nurdauletbeisenbek7-web.github.io/CEN_SALON/', tone: 'blue' },
-  { id: '03', name: 'WEDDING', kind: 'EVENT / WEB', desc: 'Анимированное приглашение с RSVP, KZ/RU-интерфейсом, картой и календарём.', stack: 'NEXT.JS · VERCEL', url: 'https://weeding-eta-sooty.vercel.app', tone: 'orange' },
-];
-const concepts = [
-  { id: 'C-01', name: 'ORBIT', type: 'CONCEPT RELEASE', desc: 'Концепт интерфейса для персональной траектории обучения.' },
-  { id: 'C-02', name: 'MOTION', type: 'CONCEPT RELEASE', desc: 'Исследование движения, типографики и интерфейса для креативного продукта.' },
-  { id: 'C-03', name: 'NEXUS', type: 'CONCEPT RELEASE', desc: 'Визуальная система для сервиса, который превращает данные в действие.' },
-];
-
-function SignalField() {
-  const ref = useRef(null);
-  useEffect(() => { const c = ref.current; const ctx = c.getContext('2d'); let w, h, raf; const dots = Array.from({ length: 85 }, () => ({ x: Math.random(), y: Math.random(), s: .4 + Math.random() * 1.7, v: .00008 + Math.random() * .0003 })); const draw = (t) => { w = c.width = c.clientWidth * devicePixelRatio; h = c.height = c.clientHeight * devicePixelRatio; ctx.clearRect(0, 0, w, h); dots.forEach((d, i) => { const x = (d.x * w + Math.sin(t * d.v * 5 + i) * 18) % w; const y = (d.y * h + Math.cos(t * d.v * 4 + i) * 12) % h; ctx.beginPath(); ctx.arc(x, y, d.s * devicePixelRatio, 0, Math.PI * 2); ctx.fillStyle = i % 8 === 0 ? '#c9ff3a' : 'rgba(255,255,255,.48)'; ctx.fill(); }); raf = requestAnimationFrame(draw); }; raf = requestAnimationFrame(draw); return () => cancelAnimationFrame(raf); }, []);
-  return <canvas className="signal" ref={ref} aria-hidden="true" />;
-}
-
-function Arrow() { return <span aria-hidden="true">↗</span>; }
+import { useEffect, useState } from 'react';
+import SmoothScroll from '@/components/SmoothScroll';
+import Cursor from '@/components/Cursor';
+import Loader from '@/components/Loader';
+import ScrollProgress from '@/components/ScrollProgress';
+import Nav from '@/components/Nav';
+import Hero from '@/components/sections/Hero';
+import About from '@/components/sections/About';
+import Skills from '@/components/sections/Skills';
+import Projects from '@/components/sections/Projects';
+import Process from '@/components/sections/Process';
+import Contact from '@/components/sections/Contact';
+import Footer from '@/components/sections/Footer';
 
 export default function Home() {
-  const [menu, setMenu] = useState(false); const [sent, setSent] = useState(false); const [busy, setBusy] = useState(false);
-  useEffect(() => { const io = new IntersectionObserver(items => items.forEach(item => item.isIntersecting && item.target.classList.add('shown')), { threshold: .12 }); document.querySelectorAll('.reveal').forEach(x => io.observe(x)); return () => io.disconnect(); }, []);
-  async function submit(e) { e.preventDefault(); setBusy(true); const r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(e.currentTarget))) }); setBusy(false); if (r.ok) { setSent(true); e.currentTarget.reset(); } else alert((await r.json()).error); }
-  return <main>
-    <div className="grain" />
-    <header><a href="#top" className="logo">NUR<span>/</span>LAB</a><button className="menu-toggle" onClick={() => setMenu(!menu)}>{menu ? 'CLOSE' : 'MENU'}</button><nav className={menu ? 'active' : ''}><a onClick={() => setMenu(false)} href="#work">WORK</a><a onClick={() => setMenu(false)} href="#lab">LAB</a><a onClick={() => setMenu(false)} href="#about">ABOUT</a><a onClick={() => setMenu(false)} href="#contact">CONTACT</a></nav><a className="sound" href="#contact"><i /> OPEN FOR IDEAS</a></header>
-    <section id="top" className="hero-lab"><SignalField /><div className="hero-topline"><span>PERSONAL DIGITAL LAB</span><span>ASTANA / KAZAKHSTAN</span></div><div className="hero-heading"><p>WEB / AI / INTERACTION</p><h1>BUILD<br/>WHAT’S<br/><em>NEXT.</em></h1></div><div className="hero-portrait"><img src="/portrait.jpg" alt="Нурдаулет Бейсенбек"/><span>NB<br/>001</span></div><div className="hero-footer"><p>Портфолио Нурдаулета Бейсенбека.<br/>Реальные веб-проекты и личные концепты.</p><a href="#work">SCROLL TO EXPLORE <b>↓</b></a><div className="hero-coordinates">51°10′N<br/>71°25′E</div></div></section>
-    <section className="manifesto" id="about"><div className="section-index reveal">[ 01 — APPROACH ]</div><div className="manifesto-copy reveal"><p className="eyebrow">КТО Я</p><h2>Я соединяю<br/><i>логику,</i> движение<br/>и <i>идею.</i></h2><p className="manifesto-text">Мне 17, я учусь в Qairu на ML-направлении и уже делаю сайты для реальных задач. Этот сайт — моя личная лаборатория: здесь есть рабочие проекты и честно обозначенные визуальные концепты.</p><a className="line-link" href="#contact">НАЧАТЬ РАЗГОВОР <Arrow /></a></div><div className="stats reveal"><div><b>Qairu</b><span>ML-направление / грант</span></div><div><b>6.0</b><span>IELTS</span></div><div><b>10</b><span>инструментов в рабочем стеке</span></div><div><b>∞</b><span>пространства для экспериментов</span></div></div></section>
-    <section id="work" className="work-lab"><div className="work-intro reveal"><div className="section-index">[ 02 — SELECTED WORK ]</div><h2>REAL<br/><i>OUTPUT.</i></h2><p>Рабочие продукты, которые можно открыть.</p></div><div className="work-list">{realWork.map((work, i) => <article className={`work-row ${work.tone} reveal`} key={work.name}><div className="work-num">0{i + 1}</div><div className="work-orb"><span>{work.id}</span></div><div className="work-name"><p>{work.kind}</p><h3>{work.name}</h3></div><p className="work-desc">{work.desc}</p><div className="work-action"><span>{work.stack}</span><a href={work.url} target="_blank" rel="noreferrer" aria-label={`Открыть ${work.name}`}><Arrow /></a></div></article>)}</div></section>
-    <section className="principles"><div className="principle reveal"><span>01</span><b>СТРУКТУРА</b><p>Сначала разбираюсь в задаче, потом выбираю форму.</p></div><div className="principle reveal"><span>02</span><b>СИСТЕМА</b><p>Интерфейс должен быть понятен человеку и устойчив в коде.</p></div><div className="principle reveal"><span>03</span><b>РАЗВИТИЕ</b><p>Каждый проект — возможность выучить и применить новое.</p></div></section>
-    <section id="lab" className="concept-lab"><div className="concept-head reveal"><div className="section-index">[ 03 — CONCEPT LAB ]</div><h2>IDEAS<br/>IN <i>MOTION.</i></h2><p>Это не клиентские кейсы. Это самостоятельные концепты для поиска новых визуальных и продуктовых решений.</p></div><div className="concepts">{concepts.map((x, i) => <article className="concept reveal" key={x.id}><div className={`concept-art art-${i + 1}`}><span>{x.id}</span><div className="concept-shape" /></div><p>{x.type}</p><h3>{x.name}</h3><p className="concept-description">{x.desc}</p><span className="concept-status">EXPERIMENTAL / PERSONAL</span></article>)}</div></section>
-    <section className="stack-lab"><div className="stack-title reveal"><div className="section-index">[ 04 — TOOLSET ]</div><h2>MAKE<br/>IT <i>REAL.</i></h2></div><div className="ticker reveal"><div>PYTHON <b>✦</b> REACT <b>✦</b> NEXT.JS <b>✦</b> JAVASCRIPT <b>✦</b> HTML <b>✦</b> CSS <b>✦</b> SQL <b>✦</b> REST API <b>✦</b> OPENAI API <b>✦</b> VERCEL <b>✦</b></div><div aria-hidden="true">PYTHON <b>✦</b> REACT <b>✦</b> NEXT.JS <b>✦</b> JAVASCRIPT <b>✦</b> HTML <b>✦</b> CSS <b>✦</b> SQL <b>✦</b> REST API <b>✦</b> OPENAI API <b>✦</b> VERCEL <b>✦</b></div></div><p className="stack-note reveal">Мой набор инструментов растёт с каждым проектом. Здесь — то, что уже изучаю или применяю на практике.</p></section>
-    <section id="contact" className="contact-lab"><div className="contact-noise"><SignalField /></div><div className="contact-copy reveal"><div className="section-index">[ 05 — CONTACT ]</div><h2>LET’S MAKE<br/>SOMETHING<br/><i>MOVE.</i></h2><p>Форма отправляет сообщение напрямую мне в Telegram. Можно также написать через Instagram или позвонить.</p><div className="socials"><a href="tel:+77028246092">PHONE <Arrow /></a><a href="tg://resolve?phone=77028246092">TELEGRAM <Arrow /></a><a href="https://www.instagram.com/nurda.b.n" target="_blank" rel="noreferrer">INSTAGRAM <Arrow /></a><a href="https://github.com/nurdauletbeisenbek7-web" target="_blank" rel="noreferrer">GITHUB <Arrow /></a></div></div><form onSubmit={submit} className="lab-form reveal">{sent ? <div className="form-success"><b>MESSAGE RECEIVED.</b><p>Спасибо. Отвечу в ближайшее время.</p><button type="button" onClick={() => setSent(false)}>НАПИСАТЬ ЕЩЁ</button></div> : <><label>01 / NAME<input required name="name" placeholder="Как к вам обращаться?" /></label><label>02 / CONTACT<input required name="contact" placeholder="Telegram, телефон или email" /></label><label>03 / MESSAGE<textarea required rows="4" name="message" placeholder="Расскажите о задаче" /></label><button disabled={busy}>{busy ? 'SENDING…' : 'SEND MESSAGE ↗'}</button><small>Нажимая кнопку, вы отправляете сообщение в Telegram.</small></>}</form></section>
-    <footer><a href="#top" className="logo">NUR<span>/</span>LAB</a><span>© 2026 / PERSONAL DIGITAL LAB</span><span>ALL SIGNALS RECEIVED.</span></footer>
-  </main>;
+  const [loaded, setLoaded] = useState(false);
+
+  // Lock scroll until the loader has finished.
+  useEffect(() => {
+    if (loaded) document.documentElement.style.overflow = '';
+  }, [loaded]);
+
+  return (
+    <>
+      <Cursor />
+      <Loader onDone={() => setLoaded(true)} />
+      <ScrollProgress />
+      <Nav />
+
+      <SmoothScroll>
+        <main>
+          <Hero ready={loaded} />
+          <About />
+          <Skills />
+          <Projects />
+          <Process />
+          <Contact />
+        </main>
+        <Footer />
+      </SmoothScroll>
+    </>
+  );
 }
