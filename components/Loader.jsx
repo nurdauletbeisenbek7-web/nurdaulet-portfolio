@@ -11,6 +11,13 @@ export default function Loader({ onDone }) {
   const [n, setN] = useState(0);
 
   useEffect(() => {
+    // Skip the boot animation on return visits within the same session.
+    if (sessionStorage.getItem('nb_loaded')) {
+      if (onDone) onDone();
+      return;
+    }
+    sessionStorage.setItem('nb_loaded', '1');
+
     const obj = { v: 0 };
     document.documentElement.classList.add('is-loading');
 
@@ -23,16 +30,16 @@ export default function Loader({ onDone }) {
 
     tl.to(obj, {
       v: 100,
-      duration: 2,
+      duration: 0.8,
       ease: 'power2.inOut',
       onUpdate: () => setN(Math.round(obj.v)),
     })
-      .to(bar.current, { scaleX: 1, duration: 2, ease: 'power2.inOut' }, 0)
-      .to(counter.current, { y: -40, opacity: 0, duration: 0.5, ease: 'power3.in' })
+      .to(bar.current, { scaleX: 1, duration: 0.8, ease: 'power2.inOut' }, 0)
+      .to(counter.current, { y: -30, opacity: 0, duration: 0.3, ease: 'power3.in' })
       .to(
         root.current,
-        { yPercent: -100, duration: 0.9, ease: 'power4.inOut' },
-        '-=0.15'
+        { yPercent: -100, duration: 0.6, ease: 'power4.inOut' },
+        '-=0.1'
       );
 
     return () => {

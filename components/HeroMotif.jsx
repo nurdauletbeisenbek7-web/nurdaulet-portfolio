@@ -13,7 +13,7 @@ export default function HeroMotif() {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     let w, h, dpr;
-    const N = 90; // nodes
+    const N = 60; // nodes (kept modest — link check is O(N²) per frame)
     const nodes = Array.from({ length: N }, () => {
       // random point on a sphere
       const theta = Math.random() * Math.PI * 2;

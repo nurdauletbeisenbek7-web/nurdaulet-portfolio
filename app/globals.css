@@ -1199,6 +1199,37 @@ img, svg { display: block; max-width: 100%; }
   user-select: none;
 }
 
+/* currently-building strip under the big NB—26 */
+.footer-building {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: clamp(24px, 4vw, 48px);
+}
+.footer-building-row {
+  background: var(--bg);
+  padding: clamp(20px, 2.4vw, 32px) clamp(16px, 2vw, 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 120px;
+}
+.footer-building-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.footer-building-label {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-dim);
+}
+
 /* ============================================================
    REVEAL (GSAP sets initial state; this is a fallback hook)
    ============================================================ */
@@ -1239,6 +1270,13 @@ img, svg { display: block; max-width: 100%; }
   .footer-socials { text-align: left; flex-direction: row; flex-wrap: wrap; gap: 18px; }
   .contact-direct { grid-template-columns: 1fr; }
   .flagship-metrics { grid-template-columns: 1fr; }
+  .footer-building { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .about-stats { grid-template-columns: 1fr; }
+  .hero-meta { gap: 28px; }
+  .footer-building { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
