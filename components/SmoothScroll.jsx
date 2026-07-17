@@ -36,7 +36,8 @@ export default function SmoothScroll({ children }) {
     window.addEventListener('scroll', onScroll, { passive: true });
 
     const tick = () => {
-      current += (target - current) * 0.085;
+      // Higher factor = snappier tracking, less lag behind the wheel/trackpad.
+      current += (target - current) * 0.22;
       if (Math.abs(target - current) < 0.1) current = target;
       content.style.transform = `translate3d(0, ${-current}px, 0)`;
       raf = requestAnimationFrame(tick);
